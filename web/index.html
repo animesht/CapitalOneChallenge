@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <title>Oscars 2015: Tweet Analysis</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href="css/prism.css" rel="stylesheet" />
+    <link href="css/extras.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://bootswatch.com/spacelab/bootstrap.css" media="screen">
+    <link rel="stylesheet" href="https://bootswatch.com/assets/css/bootswatch.min.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="../bower_components/html5shiv/dist/html5shiv.js"></script>
+      <script src="../bower_components/respond/dest/respond.min.js"></script>
+    <![endif]-->
+    <script src="js/prism.js"></script>
+	<script src="http://d3js.org/d3.v3.min.js"></script>
+	<script src="js/uStates.js"></script> <!-- creates uStates. -->
+
+<style>
+
+</style>
+
+  <style type="text/css"></style></head>
+  <body>
+     <div class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <a href="#" class="navbar-brand">Oscars 2015: Tweet Analysis</a>
+          <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+        </div>
+        <div class="navbar-collapse collapse" id="navbar-main">
+          <ul class="nav navbar-nav">
+          </ul>
+
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="http://animesh.co" target="_blank">Animesh Tripathi</a></li>
+          </ul>
+
+        </div>
+      </div>
+    </div>
+
+
+    <div class="container"><center>
+                <h1 id='spl'>#Oscars2015</h1>
+                <h1 id='splsub'>Tweet Analysis</h1></center>
+
+      <div style="margin-top: 2em;" class="clearfix">
+        <div class="row">
+                       <center> <h1 id="navbar">Popularity Rank</h1><br></center>
+
+        <div class="col-lg-6" id="add">
+        For the first part of the challenge, I used Python to create one map with all of the 8 movie names (in lowercase and without spaces), and another empty map, 'tweets' to handle unique tweets. I used Python's CSV module to parse the given data. While parsing the data row by row, I counted only unique tweets (since each retweet also counts as a tweet). To do this, I removed 'RT' from these retweets and checked whether the tweet was already in the 'tweets' map. If not, this tweet was added to the map, and the value associated with this tweet was the number of retweets. This ensured that duplicate retweets were not counted. <br><br>
+        Next, I iterated through the 'tweets' map, removing all spaces and then checking if any of the movies were mentioned in the tweet by finding the lowercase, space-sanitized movie string in the tweet string (also lowercase and space-sanitized). If found, the value for that key in the 'movies' map was incremented by the value of the 'tweet' key in the 'tweets' map (number of retweets). <br><br>
+        Finally, I used a tuple to sort the map by value in descending order and output the movies with the maximum tweets. The results were as follows: <br><br>
+        <div class="bs-component">
+			              <ul class="list-group">
+			                <li class="list-group-item">
+			                  <span class="badge">32625</span>
+			                  1) Theory of Everything
+			                </li>
+			                <li class="list-group-item">
+			                  <span class="badge">31820</span>
+							  2) Birdman
+							  </li>
+			                <li class="list-group-item">
+			                  <span class="badge">22190</span>
+							  3) Selma
+							  </li>
+							 <li class="list-group-item">
+			                  <span class="badge">15952</span>
+			                  4) American Sniper
+			                </li>
+			                <li class="list-group-item">
+			                  <span class="badge">13256</span>
+							  5) Whiplash
+							  </li>
+			                <li class="list-group-item">
+			                  <span class="badge">12691</span>
+							  6) Budapest
+							  </li>
+							<li class="list-group-item">
+			                  <span class="badge">11590</span>
+							  7) Boyhood
+							  </li>
+							<li class="list-group-item">
+			                  <span class="badge">9272</span>
+							  8) Imitation Game
+							  </li>
+			              </ul>    
+			</div>
+
+        </div>
+          <div class="col-lg-6">
+          <h3>The Code</h3>
+              <pre><code class="language-python">
+import sys
+import csv
+
+csv.field_size_limit(sys.maxsize)
+
+movies = {
+	'americansniper' : 0,
+	'imitationgame' : 0,
+	'birdman' : 0,
+	'selma' : 0 ,
+	'theoryofeverything' : 0,
+	'whiplash' : 0,
+	'boyhood' : 0,
+	'budapest' : 0
+}
+
+tweets = {}
+
+with open('oscar_tweets.csv', 'rb') as csvfile:
+	
+	read = csv.reader(csvfile)
+	
+	next(read)
+	
+	for row in read:
+		if row[2].replace("RT ", "") in tweets:
+			continue
+		else:
+			tweets[row[2].replace("RT ","")] = int(row[3]) + 1
+			
+csvfile.close()
+
+for tweet in tweets:
+	for key in movies: 
+		if tweet.replace(" ", "").lower().find(key) >= 0:
+			movies[key] += tweets[tweet]
+
+tup = []
+
+for key in movies:
+	tup.append((movies[key], key))
+
+tup.sort(reverse=True)
+i = 1
+
+for value, key in tup:
+	print i,")",key, ":", value
+	i += 1
+              </code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: 2em;" class="clearfix">
+        <div class="row">
+       <center>  <h1 id="navbar">Winner Announcement Prediction</h1><br></center>
+
+        <div class="col-lg-6" >
+        For this part of the challenge, I set up an empty map called 'times' to hold a count of the number of times 'birdman' was mentioned in tweets at different times during the Oscars. Each time the string 'birdman' was found in a tweet, the tweet's time was parsed and stored as an integer and this integer was used as a key to the 'times' map. By incrementing the value of times[time] each time 'birdman' was found in a tweet, I was able to get a dictionary of minutes and hours when birdman was mentioned. I then found the maximum value within the times dictionary by iterating through it. <br><strong>Birdman was mentioned the most at 05:06 AM UTC (9:06 PM PST) (618 tweets)</strong <br><br>
+
+<svg id="visualization" width="600" height="500"></svg>	   
+<br><center>(Times on the x-axis are meant to be read as H:MM)</center>
+        </div>
+          <div class="col-lg-6">
+          <h3>The Code</h3>
+              <pre><code class="language-python">
+import sys
+import csv
+csv.field_size_limit(sys.maxsize)
+
+times = {}
+
+with open('oscar_tweets.csv', 'rb') as csvfile:
+
+	read = csv.reader(csvfile)
+	
+	next(read)	
+	for row in read:
+
+		if row[2].replace(" ", "").lower().find("birdman") >= 0:
+			ttime = row[0].split(" ")[3].split(":")
+			time = int(ttime[0])*100 + int(ttime[1])
+			
+			if time not in times:
+				times[time] = 1
+			else:
+				times[time] += 1
+
+csvfile.close()
+
+curmax = 0
+
+for t in times:
+	if times[t] > curmax:
+		curmax = times[t]
+		maxtime = t
+
+print "Max tweets for 'birdman' at: ", int(maxtime/100), ":", ("%02d" %(maxtime%100))
+print curmax
+              </code></pre>
+          </div>
+        </div>
+      </div>
+      
+       <div style="margin-top: 2em;" class="clearfix">
+        <div class="row">
+        <center>
+<h1 id="navbar">Location</h1><br>
+Interactive heat map of states based on their twitter activity during #Oscars2015
+        	<div id="tooltip"></div><!-- div to hold tooltip. -->
+			<svg width="960" height="600" id="statesvg"></svg> <!-- svg to hold the map. -->
+        </center>
+        <div class="col-lg-6" >
+        For the final part of the challenge, I developed a tuple to int dictionary in Python, allowing the tuple to contain a state's name and abbreviation, and the integer counts to be initialized to 0. I chose this method after noticing that within the 'Locations' field, some users listed their state name, while others listed it's abbreviation. <br><br>
+        For each row, I checked whether a state's name or abbreviation were found in the location field. If so, I incremented the state's count by one in the dictionary. Finally, I used the tuple method from the first solution to sort the dictionary by value in descending order and output the ranks of states. The results were as follows:<br><br>
+        
+  <div class="bs-component">
+	  <ul class="list-group">        
+			<li class='list-group-item'><span class='badge'>11073</span>
+			1) New York (NY)
+			</li>
+			<li class='list-group-item'><span class='badge'>7408</span>
+			2) California (CA)
+			</li>
+			<li class='list-group-item'><span class='badge'>5152</span>
+			3) Texas (TX)
+			</li>
+			<li class='list-group-item'><span class='badge'>2609</span>
+			4) Florida (FL)
+			</li>
+			<li class='list-group-item'><span class='badge'>2540</span>
+			5) Washington (WA)
+			</li>
+			<li class='list-group-item'><span class='badge'>2114</span>
+			6) Illinois (IL)
+			</li>
+			<li class='list-group-item'><span class='badge'>1833</span>
+			7) Ohio (OH)
+			</li>
+			<li class='list-group-item'><span class='badge'>1783</span>
+			8) New Jersey (NJ)
+			</li>
+			<li class='list-group-item'><span class='badge'>1725</span>
+			9) Pennsylvania (PA)
+			</li>
+			<li class='list-group-item'><span class='badge'>1722</span>
+			10) Louisiana (LA)
+			</li>
+			<li class='list-group-item'><span class='badge'>1624</span>
+			11) District of Columbia (DC)
+			</li>
+			<li class='list-group-item'><span class='badge'>1561</span>
+			12) Massachusetts (MA)
+			</li>
+			<li class='list-group-item'><span class='badge'>1451</span>
+			13) Virginia (VA)
+			</li>
+			<li class='list-group-item'><span class='badge'>1427</span>
+			14) Indiana (IN)
+			</li>
+			<li class='list-group-item'><span class='badge'>1337</span>
+			15) Georgia (GA)
+			</li>
+			<li class='list-group-item'><span class='badge'>1313</span>
+			16) North Carolina (NC)
+			</li>
+			<li class='list-group-item'><span class='badge'>1303</span>
+			17) Michigan (MI)
+			</li>
+			<li class='list-group-item'><span class='badge'>1107</span>
+			18) Tennessee (TN)
+			</li>
+			<li class='list-group-item'><span class='badge'>1010</span>
+			19) Maryland (MD)
+			</li>
+			<li class='list-group-item'><span class='badge'>980</span>
+			20) Minnesota (MN)
+			</li>
+			<li class='list-group-item'><span class='badge'>971</span>
+			21) Colorado (CO)
+			</li>
+			<li class='list-group-item'><span class='badge'>949</span>
+			22) Oregon (OR)
+			</li>
+			<li class='list-group-item'><span class='badge'>888</span>
+			23) Kansas (KS)
+			</li>
+			<li class='list-group-item'><span class='badge'>852</span>
+			24) Missouri (MO)
+			</li>
+			<li class='list-group-item'><span class='badge'>830</span>
+			25) Arizona (AZ)
+			</li>
+			<li class='list-group-item'><span class='badge'>809</span>
+			26) Wisconsin (WI)
+			</li>
+			<li class='list-group-item'><span class='badge'>731</span>
+			27) Iowa (IA)
+			</li>
+			<li class='list-group-item'><span class='badge'>718</span>
+			28) Arkansas (AR)
+			</li>
+			<li class='list-group-item'><span class='badge'>696</span>
+			29) Kentucky (KY)
+			</li>
+			<li class='list-group-item'><span class='badge'>695</span>
+			30) Alabama (AL)
+			</li>
+			<li class='list-group-item'><span class='badge'>666</span>
+			31) Connecticut (CT)
+			</li>
+			<li class='list-group-item'><span class='badge'>625</span>
+			32) Nebraska (NE)
+			</li>
+			<li class='list-group-item'><span class='badge'>580</span>
+			33) Oklahoma (OK)
+			</li>
+			<li class='list-group-item'><span class='badge'>575</span>
+			34) South Carolina (SC)
+			</li>
+			<li class='list-group-item'><span class='badge'>420</span>
+			35) Rhode Island (RI)
+			</li>
+			<li class='list-group-item'><span class='badge'>411</span>
+			36) Utah (UT)
+			</li>
+			<li class='list-group-item'><span class='badge'>402</span>
+			37) North Dakota (ND)
+			</li>
+			<li class='list-group-item'><span class='badge'>365</span>
+			38) Hawaii (HI)
+			</li>
+			<li class='list-group-item'><span class='badge'>318</span>
+			39) Nevada (NV)
+			</li>
+			<li class='list-group-item'><span class='badge'>300</span>
+			40) Maine (ME)
+			</li>
+			<li class='list-group-item'><span class='badge'>247</span>
+			41) Mississippi (MS)
+			</li>
+			<li class='list-group-item'><span class='badge'>229</span>
+			42) Delaware (DE)
+			</li>
+			<li class='list-group-item'><span class='badge'>216</span>
+			43) Idaho (ID)
+			</li>
+			<li class='list-group-item'><span class='badge'>171</span>
+			44) New Mexico (NM)
+			</li>
+			<li class='list-group-item'><span class='badge'>161</span>
+			45) West Virginia (WV)
+			</li>
+			<li class='list-group-item'><span class='badge'>158</span>
+			46) New Hampshire (NH)
+			</li>
+			<li class='list-group-item'><span class='badge'>140</span>
+			47) Montana (MT)
+			</li>
+			<li class='list-group-item'><span class='badge'>130</span>
+			48) Alaska (AK)
+			</li>
+			<li class='list-group-item'><span class='badge'>116</span>
+			49) South Dakota (SD)
+			</li>
+			<li class='list-group-item'><span class='badge'>92</span>
+			50) Vermont (VT)
+			</li>
+			<li class='list-group-item'><span class='badge'>60</span>
+			51) Wyoming (WY)
+			</li>
+	  </ul>
+  </div>
+
+        </div>
+          <div class="col-lg-6">
+          <h3>The Code</h3>
+              <pre><code class="language-python">
+import sys
+import csv
+import json
+csv.field_size_limit(sys.maxsize)
+
+states = {
+	("Alabama", "AL") : 0,
+	("Alaska", "AK") : 0,
+	("Arizona",	"AZ") : 0,
+	("Arkansas", "AR") : 0,
+	("California", "CA") : 0,
+	("Colorado", "CO") : 0,
+	("Connecticut", "CT") : 0,
+	("Delaware", "DE") : 0,
+	("District of Columbia", "DC") : 0,
+	("Florida", "FL") : 0,
+	("Georgia",	"GA") : 0,
+	("Hawaii", "HI") : 0,
+	("Idaho", "ID") : 0,
+	("Illinois", "IL") : 0,
+	("Indiana",	"IN") : 0,
+	("Iowa", "IA") : 0,
+	("Kansas", "KS") : 0,
+	("Kentucky", "KY") : 0,
+	("Louisiana", "LA") : 0,
+	("Maine", "ME") : 0,
+	("Montana",	"MT") : 0,
+	("Nebraska", "NE") : 0,
+	("Nevada", "NV") : 0,
+	("New Hampshire", "NH") : 0,
+	("New Jersey", "NJ") : 0,
+	("New Mexico", "NM") : 0,
+	("New York", "NY") : 0,
+	("North Carolina", "NC") : 0,
+	("North Dakota", "ND") : 0,
+	("Ohio", "OH") : 0,
+	("Oklahoma", "OK") : 0,
+	("Oregon", "OR") : 0,
+	("Maryland", "MD") : 0,
+	("Massachusetts", "MA") : 0,
+	("Michigan", "MI") : 0,
+	("Minnesota", "MN") : 0,
+	("Mississippi", "MS") : 0,
+	("Missouri", "MO") : 0,
+	("Pennsylvania", "PA") : 0,
+	("Rhode Island", "RI") : 0,
+	("South Carolina", "SC") : 0,
+	("South Dakota", "SD") : 0,
+	("Tennessee", "TN") : 0,
+	("Texas", "TX") : 0,
+	("Utah", "UT") : 0,
+	("Vermont",	"VT") : 0,
+	("Virginia", "VA") : 0,
+	("Washington", "WA") : 0,
+	("West Virginia", "WV") : 0,
+	("Wisconsin", "WI") : 0,
+	("Wyoming", "WY") : 0
+}
+
+with open('oscar_tweets.csv', 'rb') as csvfile:
+
+	read = csv.reader(csvfile)
+	
+	next(read)
+	for row in read:
+
+		loc = row[8]
+
+		if loc != "":
+			for state in states:
+				if loc.lower().find(state[0].lower()) >= 0 or loc.find(state[1]) >= 0:
+					states[state] += 1
+
+csvfile.close()
+
+tup = []
+for state in states:
+	tup.append((states[state], state))
+
+tup.sort(reverse=True)
+
+for value, key in tup:
+	print key[0], ":", value
+
+jstates = {}
+for state in states:
+	jstates[state[0]] = states[state]
+
+print "\nJSON output (for d3 visualization):"
+print json.dumps(jstates)
+              </code></pre>
+             
+              
+          </div>
+        </div>
+      </div>
+      <footer>
+        <div class="row">
+          <div class="col-lg-12">
+
+            <ul class="list-unstyled">
+              <li class="pull-right"><a href="#top">Back to top</a></li>
+            </ul>
+
+          </div>
+        </div>
+		<script src="js/scripts.js"></script> <!-- creates uStates. -->
+      </footer>
+    </div>
+
+</body></html>
