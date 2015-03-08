@@ -1,5 +1,6 @@
 import sys
 import csv
+import json
 csv.field_size_limit(sys.maxsize)
 
 states = {
@@ -80,3 +81,10 @@ tup.sort(reverse=True)
 
 for value, key in tup:
 	print key[0], ":", value
+
+jstates = {}
+for state in states:
+	jstates[state[1]] = states[state]
+
+print "\nJSON output (for d3 visualization):"
+print json.dumps(jstates)

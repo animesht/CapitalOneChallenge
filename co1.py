@@ -18,8 +18,8 @@ tweets = {}
 with open('oscar_tweets.csv', 'rb') as csvfile:
 	
 	read = csv.reader(csvfile)
+	
 	next(read)
-
 	for row in read:
 		if row[2].replace("RT ", "") in tweets:
 			continue
@@ -38,6 +38,8 @@ for key in movies:
 	tup.append((movies[key], key))
 
 tup.sort(reverse=True)
+i = 1
 
 for value, key in tup:
-	print key, ":", value
+	print i,")",key, ":", value
+	i += 1
